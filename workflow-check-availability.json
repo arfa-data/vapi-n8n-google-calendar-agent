@@ -1,0 +1,168 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vapi-check-availability",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fdf994c7-c7b8-49a1-9ac0-3306bdbcf34d",
+      "name": "vapi-check-availability",
+      "webhookId": "5c802891-90be-48d9-8a74-1f9f1984f619"
+    },
+    {
+      "parameters": {
+        "jsCode": "const toolCalls = $input.first().json.body.message.toolCalls;\nconst rawTime = toolCalls[0].function['arguments'].dateTime;\n\n// Clean ISO string format without milliseconds\nconst startTime = new Date(rawTime).toISOString().replace(/\\.\\d{3}Z$/, 'Z');\nconst endTime = new Date(new Date(rawTime).getTime() + 60 * 60 * 1000).toISOString().replace(/\\.\\d{3}Z$/, 'Z');\n\nreturn {\n  json: {\n    timeMin: startTime,\n    timeMax: endTime\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "205b1547-a201-4578-8ef7-50e269af8e8a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin={{ $json.timeMin }}&timeMax={{ $json.timeMax }}&singleEvents=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleCalendarOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "08b0fdd6-8821-46c6-8825-38212e6a76a9",
+      "name": "HTTP Request",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xj7sh4AIrmHYMhNQ",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract tool call ID from original Vapi webhook input\nconst vapiMessage = $('vapi-check-availability').first().json.body.message;\nconst toolCallId = vapiMessage.toolCalls[0].id;\n\n// Check if items array exists and has length\nconst events = $input.first().json.items || [];\nconst isAvailable = events.length === 0;\n\nconst resultText = isAvailable \n  ? \"The requested time slot is completely available.\" \n  : \"The requested time slot is busy. Please pick another time.\";\n\nreturn {\n  json: {\n    results: [\n      {\n        toolCallId: toolCallId,\n        result: resultText\n      }\n    ]\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "11e5e5c2-747e-4062-a242-e06c652f790a",
+      "name": "Format Vapi Response"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        0
+      ],
+      "id": "b87cc574-a5db-43e4-818d-13602d8c29ef",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {
+    "vapi-check-availability": [
+      {
+        "json": {
+          "body": {
+            "message": {
+              "type": "tool-calls",
+              "toolCalls": [
+                {
+                  "id": "call_12345",
+                  "function": {
+                    "name": "check_availability",
+                    "arguments": {
+                      "dateTime": "2026-09-05T15:00:00Z"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "vapi-check-availability": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Format Vapi Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Vapi Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8325b81d-d9d8-462c-8eb7-ba7e5d9569ef",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e3806e79c5ff4310555c1edcd7ca1598e9ff2c85f5eb7f9f389b9dacf0d2b56"
+  },
+  "nodeGroups": [],
+  "id": "nH5w0jipTtiFEpHz",
+  "tags": []
+}
