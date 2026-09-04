@@ -1,4 +1,9 @@
 # Real-Time Voice AI Calendar Assistant (Vapi + n8n + Google Calendar API)
+## System Showcase
+
+| Vapi Voice Execution | n8n Workflow Execution |
+| :---: | :---: |
+| ![Vapi Chat](./vapi-chat.png) | ![n8n Workflow](./n8n-execution.png) |
 
 An automated low-latency integration bridging **Vapi.ai** voice agents with **Google Calendar** via **n8n** production webhooks. Enables real-time schedule availability checks during live voice conversations with sub-2-second response latency.
 
