@@ -3,17 +3,21 @@ Markdown
 
 An automated low-latency integration bridging **Vapi.ai** voice agents with **Google Calendar** via **n8n** production webhooks. Enables real-time schedule availability checks during live voice conversations with sub-2-second response latency.
 
+
 ## Architecture & Data Flow
 
-[User Voice Input]
-│
-▼
+```
+[User Voice Input] 
+       │
+       ▼
 [Vapi.ai Assistant] ──(Tool Call Webhook)──▶ [n8n Production Endpoint]
-│
-(ISO 8601 Date Parsing)
-│
-▼
+                                                     │
+                                            (ISO 8601 Date Parsing)
+                                                     │
+                                                     ▼
 [Vapi Response Node] ◄──(JSON Response)─── [Google Calendar REST API]
+```
+
 
 
 ## Key Engineering Highlights
