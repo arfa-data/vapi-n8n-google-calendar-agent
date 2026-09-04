@@ -3,8 +3,7 @@
 
 | Vapi Voice Execution | n8n Workflow Execution |
 | :---: | :---: |
-| ![Vapi Chat](./vapi-chat.png) | ![n8n Workflow](./n8n-execution.png) |
-
+| ![Vapi Chat](./vapi%20chat%20view.png) | ![n8n Workflow](./n8n%20execution%20view.png) |
 An automated low-latency integration bridging **Vapi.ai** voice agents with **Google Calendar** via **n8n** production webhooks. Enables real-time schedule availability checks during live voice conversations with sub-2-second response latency.
 
 ## Architecture & Data Flow
